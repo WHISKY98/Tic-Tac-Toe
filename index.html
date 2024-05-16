@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+</head>
+<style>
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    height: 100vh;
+    background-color: rgb(34, 33, 44);
+    padding: 5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game_container{
+    height: 348px;
+    width: 348px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+    background-color: rgb(91 87 137);
+    border-radius:7px;
+}
+
+.game_container .box{
+    border-radius:10px;
+    width: 30%;
+    height: 30%;
+    background-color: rgb(37, 37, 37);
+    cursor: pointer;
+}
+
+.game_container .box:hover{
+   background-color: rgb(58, 58, 58)
+}
+
+.box img{
+    height: 100%;
+    width: 100%;
+    color: rgb(155, 85, 219);
+}
+
+@keyframes breathing {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1 }
+}
+
+.breath-animation {
+    animation: breathing 1s infinite; 
+}
+
+
+</style>
+
+<body>
+        <div class="game_container">
+            <div class="box"></div>
+            <div class="box"></div>
+            <div class="box"></div>
+            <div class="box"></div>
+            <div class="box"></div>
+            <div class="box"></div>
+            <div class="box"></div>
+            <div class="box"></div>
+            <div class="box"></div>
+        </div>
+</body>
+
+<script>
+function initializeTicTacToe() {
+    const rows = document.querySelectorAll('.box');
+    let currentPlayer = 0; // 0 represents 'O', 1 represents 'X'
+    const movesX = [];
+    const movesO = [];
+    const winningPatterns = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+    ];
+
+    function arraysMatch(arr1, arr2) {
+        const sortedArr1 = arr1.sort();
+        const sortedArr2 = arr2.sort();
+
+        if (sortedArr1.length !== sortedArr2.length) {
+            return false;
+        }
+
+        for (let i = 0; i < sortedArr1.length; i++) {
+            if (sortedArr1[i] !== sortedArr2[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    function checkForWin(movesX, movesO) {
+        winningPatterns.forEach(pattern => {
+            const xMatch = [];
+            const oMatch = [];
+
+            pattern.forEach(move => {
+                if (movesX.includes(move)) {
+                    xMatch.push(move);
+                }
+                if (movesO.includes(move)) {
+                    oMatch.push(move);
+                }
+            });
+
+            if (arraysMatch(pattern, xMatch)) {
+                setTimeout(() => {
+                    if (confirm('Player X won! Do you want to restart the game?')) {
+                        location.reload(); // Restart the game
+                    }
+                }, 50);
+            }
+            if (arraysMatch(pattern, oMatch)) {
+                setTimeout(() => {
+                    if (confirm('Player O won! Do you want to restart the game?')) {
+                        location.reload();
+                    }
+                }, 50);
+            }
+        });
+    }
+
+    rows.forEach((row, index) => {
+        row.addEventListener('click', function() {
+            const img = this.querySelector('img');
+
+            if (img === null) {
+                if (currentPlayer === 0) {
+                    if (movesO.length == 3) {
+                        rows[parseInt(movesO[0])].innerHTML = '';
+                        movesO.shift();
+                    }
+                    this.innerHTML = '<img src="image/o.svg">';
+                    movesO.push(index);
+                    currentPlayer = 1;
+                } else {
+                    if (movesX.length == 3) {
+                        rows[parseInt(movesX[0])].innerHTML = '';
+                        movesX.shift();
+                    }
+                    this.innerHTML = '<img src="image/x.svg">';
+                    movesX.push(index);
+                    currentPlayer = 0;
+                }
+
+                if (movesO.length === 3 && currentPlayer === 0) {
+                    setTimeout(() => {
+                        rows[parseInt(movesO[0])].querySelector('img').classList.add('breath-animation');
+                    }, 0); // Adjust the time to match the animation duration
+                }
+                if (movesX.length === 3 && currentPlayer === 1) {
+                    setTimeout(() => {
+                        rows[parseInt(movesX[0])].querySelector('img').classList.add('breath-animation');
+                    }, 0); // Adjust the time to match the animation duration
+                }
+
+                setTimeout(() => {
+                    checkForWin(movesX, movesO);
+                }, 100);
+
+            } else {
+                alert('This row isn\'t empty');
+            }
+        });
+    });
+}
+
+// Call the function to initialize the game
+initializeTicTacToe();
+
+</script>
+</html>
